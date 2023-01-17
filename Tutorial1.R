@@ -3,9 +3,6 @@ rm(list = ls(all = TRUE)) ###CLEAR ALL
 
 #load packages / setup
 library(lubridate)
-library(rstan)
-options(mc.cores = parallel::detectCores())
-rstan_options(auto_write = TRUE)
 library(xts)
 
 ##1##
@@ -46,5 +43,14 @@ summary(model1)
 
 ##6##
 #flat prior would make sense, inflation is unpredictable
+
+#####PREP STAN#####
+library(tidyverse)
+library(recipes)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+rstan_options(auto_write = TRUE)
+
+
 
 
