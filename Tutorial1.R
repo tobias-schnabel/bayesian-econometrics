@@ -1,6 +1,13 @@
 # Tutorial 1
 rm(list = ls(all = TRUE)) ###CLEAR ALL
 
+#load packages / setup
+library(lubridate)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+rstan_options(auto_write = TRUE)
+library(xts)
+
 ##1##
 #get data
 rawdata = read.csv('NLInflation.csv')
@@ -39,4 +46,5 @@ summary(model1)
 
 ##6##
 #flat prior would make sense, inflation is unpredictable
+
 
