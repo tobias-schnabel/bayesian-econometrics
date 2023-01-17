@@ -48,6 +48,34 @@ library(rstan)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
+dat = data
+dat$date = 1:84
+
+#make recipe
+rec = recipe(AnnualCPIchange ~ date, data = dat) %>% 
+  prep(retain = T)
+
+X = juice(rec, all_predictors(), composition = 'matrix')
+y = drop(juice(rec, all_outcomes(), composition = 'matrix'))
+
+#initialize
+mod1 = stan_model('tut1.stan')
+
+#prep data
+mod1_data <- list(
+  X = X,
+  K = ncol(X),
+  N = nrow(X),
+  y = y,
+  use_y_rep = FALSE,
+  use_log_lik = FALSE
+)
+
+# mod1_data$scale_alpha <- sd(y) * 10
+# mod1_data$scale_beta <- apply(X, 2, sd) * sd(y) * 2.5
+mod1_data$loc_sigma <- sd(y)
 
 
-
+mod1_fit = sampling(mod1, data = mod1_data, 
+                    warmup = 500, iter = 1000, chains = 1, cores = 1, thin = 1)
+summary(mod1_fit)
