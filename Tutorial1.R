@@ -9,8 +9,8 @@ library(xts)
 #get data
 rawdata = read.csv('NLInflation.csv')
 
-#make TS
-require(lubridate)
+##make TS
+
 #create date object
 rawdata$dateobj = lubridate::parse_date_time(rawdata$Month, "ym")
 #create xts
@@ -25,18 +25,15 @@ plot(tsdat)
 data = data.frame(date=index(tsdat), coredata(tsdat))
 
 #sumstats
-print(mean(tsdat$AnnualCPIchange))
-print(median(tsdat$AnnualCPIchange))
-print(min(tsdat$AnnualCPIchange))
-print(max(tsdat$AnnualCPIchange))
-print(sd(tsdat$AnnualCPIchange))
+library(stargazer)
+stargazer(data, type = 'text')
 
 ##3##
 #regression model
 model1 = lm(AnnualCPIchange ~ date, data = data)
 
 ##4##
-summary(model1)
+stargazer(model1, type = 'text')
 
 ##5##
 #CPI change requires a prior, months are fixed and known in advance with 0 uncertainty
