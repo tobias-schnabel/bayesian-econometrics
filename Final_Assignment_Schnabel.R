@@ -35,5 +35,25 @@ if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent e
   hist(data$income, main = "Income", xlab = "Income")
   dev.off() #end export
   par(mfrow = c(1, 1)) #disable grid plot
-  }
+}
+
+# prepare data for STAN
+#make recipe
+rec = recipe(default ~ student + balance + income, data = data) %>% 
+  prep(retain = T)
+
+#extract X matrix and y vectors
+X = juice(rec, all_predictors(), composition = 'matrix')
+y = drop(juice(rec, all_outcomes(), composition = 'matrix'))
+
+#feed data into STAN
+stan_data <- list(
+  X = X,
+  K = ncol(X),
+  N = nrow(X),
+  y = y,
+  use_y_rep = FALSE,
+  use_log_lik = FALSE
+)
+
 
