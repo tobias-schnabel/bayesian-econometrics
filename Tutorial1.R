@@ -79,7 +79,11 @@ mod1_data$loc_sigma <- sd(y)
 ##8##
 mod1_fit = sampling(mod1, data = mod1_data, 
                     warmup = 500, iter = 1000, chains = 1, cores = 1, thin = 1)
-summary(mod1_fit)
+
+full.fit = stan(fit = mod1_fit, data = mod1_data, 
+                 warmup = 500, iter = 1000, chains = 1, cores = 1, thin = 1)
+
+params = rstan::extract(full.fit)
 
 ##9##
 trunc = round(0.8 * nrow(dat))
@@ -118,4 +122,14 @@ mod2_data$loc_sigma <- sd(y2)
 ##8##
 mod2_fit = sampling(mod2, data = mod2_data, 
                     warmup = 500, iter = 1000, chains = 1, cores = 1, thin = 1)
-summary(mod2_fit)
+
+trunc.fit = stan(fit = mod2_fit, data = mod2_data, 
+                    warmup = 500, iter = 1000, chains = 1, cores = 1, thin = 1)
+
+params2 = rstan::extract(trunc.fit)
+
+#compare results
+pairs(full.fit, pars = c("alpha", "beta", "sigma"))
+pairs(trunc.fit, pars = c("alpha", "beta", "sigma"))
+
+
