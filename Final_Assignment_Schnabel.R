@@ -5,6 +5,7 @@ rm(list = ls(all = TRUE)) #CLEAR ALL
 
 ## Housekeeping ##
 library(tidyverse)
+library(broom)
 library(stargazer)
 library(recipes)
 library(rstan)
@@ -37,7 +38,7 @@ if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent e
   par(mfrow = c(1, 1)) #disable grid plot
 }
 
-# prepare data for STAN
+#prepare data for STAN
 #make recipe
 rec = recipe(default ~ student + balance + income, data = data) %>% 
   prep(retain = T)
@@ -55,5 +56,20 @@ stan_data <- list(
   use_y_rep = FALSE,
   use_log_lik = FALSE
 )
+
+#estimate logit baseline
+form = formula(default ~ student + balance + income)
+
+baseline = glm(form, data = data,family = "binomial")
+
+#flat priors
+
+#data driven priors
+
+
+#posterior predictive checks
+
+
+
 
 
