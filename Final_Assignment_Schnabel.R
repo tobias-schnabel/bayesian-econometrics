@@ -80,22 +80,47 @@ flat.fit = stan_glm(default ~ student + balance + income, data = data,
                  warmup = 1000, iter = 10000, chains = 4, refresh = 10000)
 
 y_rep = posterior_predict(flat.fit, draws = 1000)
+posterior = as.matrix(flat.fit)
 
 color_scheme_set("brightblue")
-ppc_dens_overlay(y, y_rep)
+
+dot = ggtitle()
+ppc_dens_overlay(y, y_rep) + 
+  scale_x_continuous( limits=c(0, 1), 
+              breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1))
+                     
+ppc_ecdf_overlay(y, y_rep, discrete = T)
+ppc_intervals(y, y_rep)
+
+# plot_title <- ggtitle("Posterior distributions",
+#                       "with medians and 80% intervals")
+# mcmc_areas(posterior,
+#            pars = c("student", "balance"),
+#            prob = 0.5) + plot_title
 
 #define custom functions
 prop_zero <- function(x) mean(x == 0)
 prop_one <- function(x) mean(x == 1)
 
+#check proportions of 0s and ones
 ppc_stat(y, y_rep, stat = "prop_zero", binwidth = 0.00005)
 ppc_stat(y, y_rep, stat = "prop_one", binwidth = 0.00005)
 
-#compare results
-par(mar=rep(0,4))
-dev.off()
-# pairs(params, pars = c("alpha", "beta"))
-# pairs(flat.fit.fixedparam.2, pars = c("alpha", "beta", "eta"))
+#check posterior trace
+color_scheme_set("mix-blue-pink")
+mcmc_trace(posterior)
+#mcmc_scatter(posterior)
+
+# mcmc diagnostics
+# rhat
+plot(flat.fit, "rhat")
+plot(flat.fit, "rhat_hist")
+# ratio of effective sample size to total posterior sample size
+plot(flat.fit, "neff")
+plot(flat.fit, "neff_hist")
+# autocorrelation by chain
+plot(flat.fit, "acf", pars = "(Intercept)")
+plot(flat.fit, "acf_bar", pars = "(Intercept)")
 
 #data driven priors
 
