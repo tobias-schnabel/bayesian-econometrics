@@ -35,7 +35,8 @@ tidy(baseline)
 plot(baseline)
 
 #summary histograms
-if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent errors
+if (Sys.info()[7] == "ts") { 
+  #this code only executes on my machine to prevent errors
   setwd('/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Figures')
   par(mfrow = c(2, 2)) #enable grid plot
   png("fss.png", width = 1000, height = 1000, units = "px") #start export
@@ -46,6 +47,7 @@ if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent e
   dev.off() #end export
   par(mfrow = c(1, 1)) #disable grid plot
   
+  setwd('/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Figures')
   #correlograms
   png("corr1.png", width = 1000, height = 1000, units = "px") 
   pairs(data[c(2,4)])
@@ -75,12 +77,19 @@ X2 = juice(rec2, student, balance)
 #flat priors WITH income variable
 flat.fit = stan_glm(default ~ student + balance + income, data = data, 
                  family = "binomial", y = T, algorithm = "sampling", 
-                 warmup = 1000, iter = 10000, chains = 4)
+                 warmup = 1000, iter = 10000, chains = 4, refresh = 10000)
 
 y_rep = posterior_predict(flat.fit, draws = 1000)
 
 color_scheme_set("brightblue")
-ppc_dens_overlay(y, yrep[1:50, ])
+ppc_dens_overlay(y, y_rep)
+
+#define custom functions
+prop_zero <- function(x) mean(x == 0)
+prop_one <- function(x) mean(x == 1)
+
+ppc_stat(y, y_rep, stat = "prop_zero", binwidth = 0.00005)
+ppc_stat(y, y_rep, stat = "prop_one", binwidth = 0.00005)
 
 #compare results
 par(mar=rep(0,4))
