@@ -9,8 +9,10 @@ library(broom)
 library(stargazer)
 library(recipes)
 library(rstan)
+library(rstanarm)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
+library(bayesplot)
 
 #load ISLR for data
 library(ISLR)
@@ -30,6 +32,7 @@ form = formula(default ~ student + balance + income)
 
 baseline = glm(form, data = data, family = "binomial")
 tidy(baseline)
+plot(baseline)
 
 #summary histograms
 if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent errors
@@ -68,55 +71,22 @@ rec2 = recipe(default ~ student + balance, data = data) %>%
 X2 = juice(rec2, student, balance)
 # y is identical
 
-#feed data into STAN
-stan_data_1 <- list(
-  X = X,
-  K = ncol(X),
-  N = nrow(X),
-  y = y,
-  use_y_rep = FALSE,
-  use_log_lik = F
-)
-
-stan_data_2 <- list(
-  X = X2,
-  K = ncol(X2),
-  N = nrow(X2),
-  y = y,
-  use_y_rep = FALSE,
-  use_log_lik = F
-)
-
-#initialize models
-stan.mod = stan_model('Final_Assignment_Schnabel.stan')
-
-#flat priors WITHOUT income variable
-flat.fit.hmc = sampling(stan.mod, data = stan_data_2, 
-                    algorithm = "HMC",
-                 warmup = 1000, iter = 10000, chains = 1, thin = 1)
-
-flat.fit.fixedparam = sampling(stan.mod, data = stan_data_2, 
-                    algorithm = "Fixed_param",
-                    warmup = 1000, iter = 10000, chains = 1, thin = 1)
-
-flat.fit.nuts = sampling(stan.mod, data = stan_data_2, 
-                      algorithm = "NUTS",
-                      warmup = 1000, iter = 10000, chains = 1, thin = 1)
 
 #flat priors WITH income variable
-# flat.fit.hmc.2 = sampling(stan.mod, data = stan_data_1, 
-#                     algorithm = "HMC",
-#                     warmup = 1000, iter = 10000, chains = 1, thin = 1)
-# 
-# flat.fit.fixedparam.2 = sampling(stan.mod, data = stan_data_1, 
-#                       algorithm = "Fixed_param",
-#                       warmup = 1000, iter = 10000, chains = 1, thin = 1)
-# 
-# flat.fit.nuts.2 = sampling(stan.mod, data = stan_data_1, 
-#                       algorithm = "NUTS",
-#                       warmup = 1000, iter = 10000, chains = 1, thin = 1)
+flat.fit = stan_glm(default ~ student + balance + income, data = data, 
+                 family = "binomial", y = T, algorithm = "sampling", 
+                 warmup = 1000, iter = 10000, chains = 4)
 
-#params2 = rstan::extract(trunc.fit)
+y_rep = posterior_predict(flat.fit, draws = 1000)
+
+color_scheme_set("brightblue")
+ppc_dens_overlay(y, yrep[1:50, ])
+
+#compare results
+par(mar=rep(0,4))
+dev.off()
+# pairs(params, pars = c("alpha", "beta"))
+# pairs(flat.fit.fixedparam.2, pars = c("alpha", "beta", "eta"))
 
 #data driven priors
 
