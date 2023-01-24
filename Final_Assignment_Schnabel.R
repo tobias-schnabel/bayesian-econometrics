@@ -25,6 +25,12 @@ data = Default %>%
 #df summary statistics
 stargazer(data, type = "text")
 
+#estimate logit baseline
+form = formula(default ~ student + balance + income)
+
+baseline = glm(form, data = data, family = "binomial")
+tidy(baseline)
+
 #summary histograms
 if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent errors
   setwd('/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Figures')
@@ -36,6 +42,15 @@ if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent e
   hist(data$income, main = "Income", xlab = "Income")
   dev.off() #end export
   par(mfrow = c(1, 1)) #disable grid plot
+  
+  #correlograms
+  png("corr1.png", width = 1000, height = 1000, units = "px") 
+  pairs(data[c(2,4)])
+  dev.off()
+  png("corr2.png", width = 1000, height = 1000, units = "px") 
+  pairs(data[3:4])
+  dev.off()
+  setwd('/Users/ts/Git/ise')
 }
 
 #prepare data for STAN
@@ -43,9 +58,12 @@ if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent e
 rec = recipe(default ~ student + balance + income, data = data) %>% 
   prep(retain = T)
 
+#make recipe #2 without income due to high correlation
+
 #extract X matrix and y vectors
 X = juice(rec, all_predictors(), composition = 'matrix')
-y = drop(juice(rec, all_outcomes(), composition = 'matrix'))
+X2 = juice(rec, student, balance)
+y = juice(rec, all_outcomes(), composition = 'matrix') %>% drop()
 
 #feed data into STAN
 stan_data <- list(
@@ -54,15 +72,16 @@ stan_data <- list(
   N = nrow(X),
   y = y,
   use_y_rep = FALSE,
-  use_log_lik = FALSE
+  use_log_lik = F
 )
 
-#estimate logit baseline
-form = formula(default ~ student + balance + income)
 
-baseline = glm(form, data = data,family = "binomial")
 
 #flat priors
+flat.fit = stan("Final_Assignment_Schnabel.stan", data = stan_data, 
+                 warmup = 1000, iter = 10000, chains = 1, thin = 1)
+
+params2 = rstan::extract(trunc.fit)
 
 #data driven priors
 
@@ -71,5 +90,16 @@ baseline = glm(form, data = data,family = "binomial")
 
 
 
-
+# do tables
+if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent errors
+  setwd('/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Tables')
+  #summary stats
+  stargazer(data, summary = T, title = "Summary Statistics", float = T, 
+            table.placement = "H")
+  #baseline
+  stargazer(baseline, title = "Baseline Estimation Results", float = T, 
+            table.placement = "H")
+  
+  setwd('/Users/ts/Git/ise')
+}
 
