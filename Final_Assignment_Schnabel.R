@@ -58,15 +58,18 @@ if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent e
 rec = recipe(default ~ student + balance + income, data = data) %>% 
   prep(retain = T)
 
-#make recipe #2 without income due to high correlation
-
 #extract X matrix and y vectors
 X = juice(rec, all_predictors(), composition = 'matrix')
-X2 = juice(rec, student, balance)
 y = juice(rec, all_outcomes(), composition = 'matrix') %>% drop()
 
+#make recipe #2 without income due to high correlation
+rec2 = recipe(default ~ student + balance, data = data) %>% 
+  prep(retain = T)
+X2 = juice(rec2, student, balance)
+# y is identical
+
 #feed data into STAN
-stan_data <- list(
+stan_data_1 <- list(
   X = X,
   K = ncol(X),
   N = nrow(X),
@@ -75,13 +78,45 @@ stan_data <- list(
   use_log_lik = F
 )
 
+stan_data_2 <- list(
+  X = X2,
+  K = ncol(X2),
+  N = nrow(X2),
+  y = y,
+  use_y_rep = FALSE,
+  use_log_lik = F
+)
 
+#initialize models
+stan.mod = stan_model('Final_Assignment_Schnabel.stan')
 
-#flat priors
-flat.fit = stan("Final_Assignment_Schnabel.stan", data = stan_data, 
+#flat priors WITHOUT income variable
+flat.fit.hmc = sampling(stan.mod, data = stan_data_2, 
+                    algorithm = "HMC",
                  warmup = 1000, iter = 10000, chains = 1, thin = 1)
 
-params2 = rstan::extract(trunc.fit)
+flat.fit.fixedparam = sampling(stan.mod, data = stan_data_2, 
+                    algorithm = "Fixed_param",
+                    warmup = 1000, iter = 10000, chains = 1, thin = 1)
+
+flat.fit.nuts = sampling(stan.mod, data = stan_data_2, 
+                      algorithm = "NUTS",
+                      warmup = 1000, iter = 10000, chains = 1, thin = 1)
+
+#flat priors WITH income variable
+# flat.fit.hmc.2 = sampling(stan.mod, data = stan_data_1, 
+#                     algorithm = "HMC",
+#                     warmup = 1000, iter = 10000, chains = 1, thin = 1)
+# 
+# flat.fit.fixedparam.2 = sampling(stan.mod, data = stan_data_1, 
+#                       algorithm = "Fixed_param",
+#                       warmup = 1000, iter = 10000, chains = 1, thin = 1)
+# 
+# flat.fit.nuts.2 = sampling(stan.mod, data = stan_data_1, 
+#                       algorithm = "NUTS",
+#                       warmup = 1000, iter = 10000, chains = 1, thin = 1)
+
+#params2 = rstan::extract(trunc.fit)
 
 #data driven priors
 
