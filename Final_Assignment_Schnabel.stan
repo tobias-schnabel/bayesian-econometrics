@@ -26,7 +26,7 @@ transformed parameters {
 model {
 
   // multiple logistic regression model 
-  y ~ bernoulli_logit(eta);
+  y ~ bernoulli_logit(alpha + X * beta);
   
   // Prior models for the unobserved parameters
   // alpha ~ normal(0, 1);
