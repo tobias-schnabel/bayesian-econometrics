@@ -5,7 +5,7 @@ rm(list = ls(all = TRUE)) #CLEAR ALL
 
 ## Housekeeping ##
 library(tidyverse)
-library(broom)
+library(ggpubr)
 library(stargazer)
 library(recipes)
 library(rstan)
@@ -74,7 +74,7 @@ strong.fit = stan_glm(default ~ student + balance + income, data = data,
                     prior = normal(location = c(2, 1, 1), scale = NULL, autoscale = T),
                     warmup = 1000, iter = 10000, chains = 4, refresh = 10000)
 
-yrep.strong = posterior.flat_predict(strong.fit, draws = 1000)
+yrep.strong = posterior_predict(strong.fit, draws = 1000)
 
 posterior.strong = as.matrix(strong.fit)
 
@@ -95,56 +95,9 @@ monitor(posterior.strong)
 #look at strong priors
 prior_summary(strong.fit)
 
-
-####Gaphical PPC###
-color_scheme_set("brightblue")
-#color_scheme_get()
-# 1    #cce5ff
-# 2    #99cbff
-# 3    #4ca5ff
-# 4    #198bff
-# 5    #0065cc
-# 6    #004c99
-
-#histogram of posterior.flat
-ht = ggtitle("Histogram of 1000 Draws from posterior.flat")
-ph = ggplot(data = plotposterior.flat,aes(x = value, group = variable)) +
-  geom_histogram(bins=300, colour = "#99cbff") +
-  facet_wrap(~ variable, scales = "free_x") + ht +
-  scale_x_continuous(labels = scales::comma)
-
-dot = ggtitle("Density Overlay Plot, 1000 Draws")
-do = ppc_dens_overlay(y, yrep.flat) + 
-  scale_x_continuous( limits=c(0, 1), 
-              breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
-              dot
-                     
-ppc_ecdf_overlay(y, yrep.flat, discrete = T)
-
-#define custom functions
+#define custom functions for plots below
 prop_zero <- function(x) mean(x == 0)
 prop_one <- function(x) mean(x == 1)
-
-#check proportions of 0s and ones
-ppc_stat(y, yrep.flat, stat = "prop_zero", binwidth = 0.00005)
-ppc_stat(y, yrep.flat, stat = "prop_one", binwidth = 0.00005)
-
-#check posterior.flat trace
-color_scheme_set("mix-blue-pink")
-mcmc_trace(flat.fit)
-mcmc_pairs(flat.fit)
-
-# mcmc diagnostics
-# rhat
-plot(flat.fit, "rhat")
-plot(flat.fit, "rhat_hist")
-# ratio of effective sample size to total posterior.flat sample size
-plot(flat.fit, "neff")
-plot(flat.fit, "neff_hist")
-# autocorrelation by chain
-plot(flat.fit, "acf", pars = "(Intercept)")
-plot(flat.fit, "acf_bar", pars = "(Intercept)")
-mcmc_acf(flat.fit)
 
 #Geweke Test
 geweke.diag(posterior.flat)
@@ -165,6 +118,19 @@ if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent e
   #baseline
   stargazer(baseline, title = "Baseline Estimation Results", float = T, 
             table.placement = "H")
+  
+  #summary tables of fits
+  kable(as.data.frame(summary(flat.fit)), format = "latex", 
+                     digits = 4,
+                     caption = "Fit with Flat Priors") %>% 
+    save_kable("flatfitsumm.tex")
+  
+  setwd('/Users/ts/Git/ise')
+  
+  kable(as.data.frame(summary(strong.fit)), format = "latex", 
+        digits = 4,
+        caption = "Fit with Strong Priors") %>% 
+    save_kable("strongfitsumm.tex")
   
   setwd('/Users/ts/Git/ise')
 }
@@ -192,53 +158,75 @@ if (Sys.info()[7] == "ts") {
   pairs(data[3:4])
   dev.off()
   
+  ####Gaphical PPC###
+  color_scheme_set("brightblue")
+  #color_scheme_get()
+  # 1    #cce5ff
+  # 2    #99cbff
+  # 3    #4ca5ff
+  # 4    #198bff
+  # 5    #0065cc
+  # 6    #004c99
+  
+  #define plot title for flat and strong priors
+  tf = ggtitle("Flat Prior")
+  ts = ggtitle("Strong Prior")
   
   #set variables for plots for FLAT PRIORS
   yrep = yrep.flat
   posterior = posterior.flat
   fit = flat.fit
   
+  #histogram of posterior.flat
+  htf = ggtitle("Posterior Histogram, Flat Priors, 1000 Draws")
+  phf = ggplot(data = plotposterior.flat,aes(x = value, group = variable)) +
+    geom_histogram(bins=300, colour = "#99cbff") +
+    facet_wrap(~ variable, scales = "free_x") + htf +
+    scale_x_continuous(labels = scales::comma)
+  
+  ggsave("posterior_hist_flat.jpg", phf)
+  
   #density overlay
-  ppc_dens_overlay(y, yrep) + 
+  dof = ppc_dens_overlay(y, yrep) + 
     scale_x_continuous( limits=c(0, 1), 
                         breaks = c(0, 0.1, 0.2, 0.3, 0.4, 
                                    0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
-                    dot
-  ggsave("density_overlay_flat.jpg")
+                    tf
+  ggsave("density_overlay_flat.jpg", dof)
   #discrete density overlay
-  ppc_ecdf_overlay(y, yrep, discrete = T)
-  ggsave("density_overlay_discrete_flat.jpg")
+  dodf = ppc_ecdf_overlay(y, yrep, discrete = T) + tf
+  ggsave("density_overlay_discrete_flat.jpg", dodf)
   
   #check proportions of 0s and ones
-  ppc_stat(y, yrep, stat = "prop_zero", binwidth = 0.00005)
-  ggsave("prop0_flat.jpg")
-  ppc_stat(y, yrep, stat = "prop_one", binwidth = 0.00005)
-  ggsave("prop1_flat.jpg")
+  p0f = ppc_stat(y, yrep, stat = "prop_zero", binwidth = 0.00005) + tf
+  ggsave("prop0_flat.jpg", p0f)
+  p1f = ppc_stat(y, yrep, stat = "prop_one", binwidth = 0.00005) + tf
+  ggsave("prop1_flat.jpg", p1f)
   
   #check posterior.flat trace
   color_scheme_set("mix-blue-pink")
-  mcmc_trace(fit)
-  ggsave("mcmc_trace_flat.jpg")
-  mcmc_pairs(fit)
-  ggsave("mcmc_pairs.jpg")
+  trace.flat = mcmc_trace(fit) + tf
+  ggsave("mcmc_trace_flat.jpg", trace.flat)
+  pairs.flat = mcmc_pairs(fit) + tf
+  ggsave("mcmc_pairs.jpg", pairs.flat)
   
   # mcmc diagnostics
   # rhat
-  plot(fit, "rhat")
-  ggsave("rhat_flat.jpg")
+  rhat.flat = plot(fit, "rhat") + tf
+  ggsave("rhat_flat.jpg", rhat.flat) 
   #plot(fit, "rhat_hist")
   # ratio of effective sample size to total posterior.flat sample size
-  plot(fit, "neff")
-  ggsave("neff_flat.jpg")
+  neff.flat = plot(fit, "neff") + tf
+  ggsave("neff_flat.jpg", neff.flat) 
   #plot(fit, "neff_hist")
   # autocorrelation by chain
   # plot(fit, "acf", pars = "(Intercept)")
-  plot(fit, "acf_bar", pars = "(Intercept)")
-  ggsave("acf_bars_flat.jpg")
+  acfb.flat = plot(fit, "acf_bar", pars = "(Intercept)") + tf
+  ggsave("acf_bars_flat.jpg", acfb.flat)
   
   #joint acf
-  mcmc_acf(fit)
-  ggsave("acf_flat.jpg")
+  acf.flat = mcmc_acf(fit) + tf
+  ggsave("acf_flat.jpg", acf.flat)
   
   
   #########REPEAT ALL PLOTS FOR STRONG PRIOR MODEL#########
@@ -248,47 +236,77 @@ if (Sys.info()[7] == "ts") {
   posterior = posterior.strong
   fit = strong.fit
   
+  
+  #histogram of posterior.strong
+  hts = ggtitle("Posterior Histogram, Strong Priors, 1000 Draws")
+  phs = ggplot(data = plotposterior.strong,aes(x = value, group = variable)) +
+    geom_histogram(bins=300, colour = "#99cbff") +
+    facet_wrap(~ variable, scales = "free_x") + hts +
+    scale_x_continuous(labels = scales::comma)
+  
+  ggsave("posterior_hist_strong.jpg")
+  
   #density overlay
-  ppc_dens_overlay(y, yrep) + 
+  dos = ppc_dens_overlay(y, yrep) + 
     scale_x_continuous( limits=c(0, 1), 
                         breaks = c(0, 0.1, 0.2, 0.3, 0.4, 
                                    0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
-                          dot
-  ggsave("density_overlay_strong.jpg")
+                          ts
+  ggsave("density_overlay_strong.jpg", dos) 
   #discrete density overlay
-  ppc_ecdf_overlay(y, yrep, discrete = T)
-  ggsave("density_overlay_discrete_strong.jpg")
+  dods = ppc_ecdf_overlay(y, yrep, discrete = T) + ts
+  ggsave("density_overlay_discrete_strong.jpg", dods) 
   
   #check proportions of 0s and ones
-  ppc_stat(y, yrep, stat = "prop_zero", binwidth = 0.00005)
-  ggsave("prop0_strong.jpg")
-  ppc_stat(y, yrep, stat = "prop_one", binwidth = 0.00005)
-  ggsave("prop1_strong.jpg")
+  p0s = ppc_stat(y, yrep, stat = "prop_zero", binwidth = 0.00005) + ts
+  ggsave("prop0_strong.jpg", p0s)
+  p1s = ppc_stat(y, yrep, stat = "prop_one", binwidth = 0.00005) + ts
+  ggsave("prop1_strong.jpg", p1s)
   
   #check posterior.flat trace
   color_scheme_set("mix-blue-pink")
-  mcmc_trace(fit)
-  ggsave("mcmc_trace_strong.jpg")
-  mcmc_pairs(fit)
-  ggsave("mcmc_pairs.jpg")
+  trace.strong = mcmc_trace(fit) + ts
+  ggsave("mcmc_trace_strong.jpg", trace.strong)
+  pairs.strong = mcmc_pairs(fit) + ts
+  ggsave("mcmc_pairs.jpg", pairs.strong)
   
   # mcmc diagnostics
   # rhat
-  plot(fit, "rhat")
-  ggsave("rhat_strong.jpg")
+  rhat.strong = plot(fit, "rhat") + ts
+  ggsave("rhat_strong.jpg", rhat.strong)
   #plot(fit, "rhat_hist")
   # ratio of effective sample size to total posterior.flat sample size
-  plot(fit, "neff")
-  ggsave("neff_strong.jpg")
+  neff.strong = plot(fit, "neff") + ts
+  ggsave("neff_strong.jpg", neff.strong)
   #plot(fit, "neff_hist")
   # autocorrelation by chain
   # plot(fit, "acf", pars = "(Intercept)")
-  plot(fit, "acf_bar", pars = "(Intercept)")
-  ggsave("acf_bars_strong.jpg")
+  acfb.strong = plot(fit, "acf_bar", pars = "(Intercept)") + ts
+  ggsave("acf_bars_strong.jpg", acfb.strong)
   
   #joint acf
-  mcmc_acf(fit)
-  ggsave("acf_strong.jpg")
+  acf.strong = mcmc_acf(fit) + ts
+  ggsave("acf_strong.jpg", acf.strong)
+  
+  ######DO side-by-side-comparison Plots######
+  
+  #compare posterior histograms
+  ggarrange(phf, phs)
+  ggsave('hist_comp.jpg')
+  
+  #compare prop 0/1
+  ggarrange(p0f, p0s, p1f, p1s)
+  ggsave('prop_comp.jpg')
+  
+  #compare density overlays
+  ggarrange(dof, dos)
+  ggsave('dens_comp.jpg')
+  
+  #compare discrete density overlays
+  ggarrange(dodf, dods)
+  ggsave('dens_dis_comp.jpg')
+  
+  #mcmc
   
   setwd('/Users/ts/Git/ise')
 }
