@@ -80,9 +80,36 @@ flat.fit = stan_glm(default ~ student + balance + income, data = data,
                  warmup = 1000, iter = 10000, chains = 4, refresh = 10000)
 
 y_rep = posterior_predict(flat.fit, draws = 1000)
-posterior = as.matrix(flat.fit)
 
+posterior = as.matrix(flat.fit)
+posteriordf = as.data.frame(flat.fit)
+
+#tidy df for ggplot
+plotposterior = posteriordf %>% 
+  reshape2::melt(measure.vars = 1:4)
+
+#monitor results
+monitor(posterior)
+
+
+####Gaphical PPC###
 color_scheme_set("brightblue")
+#color_scheme_get()
+# 1    #cce5ff
+# 2    #99cbff
+# 3    #4ca5ff
+# 4    #198bff
+# 5    #0065cc
+# 6    #004c99
+
+#histogram of posterior
+ht = ggtitle("Histogram of 1000 Draws from Posterior")
+ph = ggplot(data = plotposterior,aes(x = value, group = variable)) +
+  geom_histogram(bins=300, colour = "#99cbff") +
+  facet_wrap(~ variable, scales = "free_x") + ht +
+  scale_x_continuous(labels = scales::comma)
+
+
 
 dot = ggtitle("Density Overlay Plot, 1000 Draws")
 ppc_dens_overlay(y, y_rep) + 
