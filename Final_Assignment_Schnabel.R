@@ -41,8 +41,8 @@ intrain_5k = caret::createDataPartition(
   list = F
 )
 
-subset1 = data[intrain_5k,]
-subset2 = data[intrain_1k,]
+subset1 = data[intrain_1k,]
+subset2 = data[intrain_5k,]
 
 #verify proportions
 props = rbind(table(data$default)[2]/table(data$default)[1],
@@ -171,7 +171,9 @@ propcomp
 denscomp
 discretedenscomp
 rhatcomp
+neffcomp
 acfcomp
+do_sample_comp
 
 
 
