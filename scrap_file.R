@@ -1,5 +1,18 @@
 #storage for code that might need to be re-used
+#prepare data for STAN
+#make recipe
+rec = recipe(default ~ student + balance + income, data = data) %>% 
+  prep(retain = T)
 
+#extract X matrix and y vectors
+X = juice(rec, all_predictors(), composition = 'matrix')
+y = juice(rec, all_outcomes(), composition = 'matrix') %>% drop()
+
+#make recipe #2 without income due to high correlation
+rec2 = recipe(default ~ student + balance, data = data) %>% 
+  prep(retain = T)
+X2 = juice(rec2, student, balance)
+# y is identical
 #feed data into STAN
 stan_data_1 <- list(
   X = X,
