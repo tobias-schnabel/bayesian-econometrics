@@ -18,8 +18,6 @@ kable(as.data.frame(summary(flat.fit)), format = "latex",
       caption = "Fit with Flat Priors") %>% 
   save_kable("flatfitsumm.tex")
 
-setwd('/Users/ts/Git/ise')
-
 kable(as.data.frame(summary(strong.fit)), format = "latex", 
       digits = 4,
       caption = "Fit with Strong Priors, Full Data Set") %>% 
