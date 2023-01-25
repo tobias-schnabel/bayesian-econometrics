@@ -3,8 +3,8 @@ tf = ggtitle("Flat Prior")
 ts = ggtitle("Strong Prior")
 dn = labs(caption = "1000 Draws from Posterior")
 full = ggtitle("Full Data Set")
-sub1 = ggtitle("Subset 1")
-sub2 = ggtitle("Subset 2")
+sub1 = ggtitle("1,000 obs")
+sub2 = ggtitle("5,000 obs")
 
 color_scheme_set("brightblue")
 
@@ -51,7 +51,7 @@ rhat.flat = plot(fit, "rhat") + tf
 neff.flat = plot(fit, "neff") + tf
 
 # autocorrelation by chain
-acfb.flat = plot(fit, "acf_bar", pars = "(Intercept)") + tf
+acfb.flat = plot(fit, "acf_bar", pars = "student") + tf
 
 #joint acf
 acf.flat = mcmc_acf(fit) + tf
@@ -95,7 +95,7 @@ pairs.strong = mcmc_pairs(fit) #+ ts
 # rhat
 rhat.strong = plot(fit, "rhat") + ts
 neff.strong = plot(fit, "neff") + ts
-acfb.strong = plot(fit, "acf_bar", pars = "(Intercept)") + ts
+acfb.strong = plot(fit, "acf_bar", pars = "student") + ts
 
 
 #joint acf
@@ -112,7 +112,10 @@ denscomp = ggarrange(dof, dos)
 #compare discrete density overlays
 discretedenscomp = ggarrange(dodf, dods)
 #mcmc
-rhatcomp = ggarrange(rhat.flat, rhat.strong, neff.flat, neff.strong, ncol = 2,
+rhatcomp = ggarrange(rhat.flat, rhat.strong,
+                     common.legend = T, legend = "bottom")
+
+neffcomp = ggarrange(neff.flat, neff.strong,
                      common.legend = T, legend = "bottom")
 #acf
 acfcomp = ggarrange(acf.flat, acf.strong)
@@ -140,6 +143,27 @@ do.s2 = ppc_dens_overlay(y_s2, yrep.strong.s2) +
   sub2
 
 do_sample_comp = ggarrange(do.s2, do.s1, dos.comp, nrow = 3)
+
+rhat.s.full = plot(strong.fit, "rhat") + full
+rhat.s.s1 = plot(strong.fit.s1, "rhat") + sub1
+rhat.s.s2 = plot(strong.fit.s2, "rhat") + sub2
+
+rhat_sample_comp = ggarrange(rhat.s.s1, rhat.s.s2, rhat.s.full, nrow = 3,
+                             common.legend = T, legend = "bottom")
+
+neff.s.full = plot(strong.fit, "neff") + full
+neff.s.s1 = plot(strong.fit.s1, "neff") + sub1
+neff.s.s2 = plot(strong.fit.s2, "neff") + sub2
+
+neff_sample_comp = ggarrange(neff.s.s1, neff.s.s2, neff.s.full, nrow = 3,
+                             common.legend = T, legend = "bottom")
+
+acf.s.full = plot(strong.fit, "acf", pars = "(Intercept)") + full + xlim(0,7)
+acf.s.s1 = plot(strong.fit.s1, "acf", pars = "(Intercept)") + sub1 + xlim(0,7)
+acf.s.s2 = plot(strong.fit.s2, "acf", pars = "(Intercept)") + sub2 + xlim(0,7)
+
+acf_sample_comp = ggarrange(acf.s.s1, acf.s.s2, acf.s.full, nrow = 3,
+                             common.legend = T, legend = "bottom") 
 
 #reset color scheme
 color_scheme_set("brightblue")
