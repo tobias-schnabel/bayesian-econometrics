@@ -29,8 +29,32 @@ data = Default %>%
 stargazer(data, type = "text")
 
 #generate datasets with fewer obs to compare models
-prop_default = table(data$default)[2]/table(data$default)[1] #3.4% default rate
+intrain_1k = caret::createDataPartition(
+  y = data$default,
+  p = 0.1,
+  list = F
+)
 
+intrain_5k = caret::createDataPartition(
+  y = data$default,
+  p = 0.5,
+  list = F
+)
+
+subset1 = data[intrain_5k,]
+subset2 = data[intrain_1k,]
+
+#verify proportions
+props = rbind(table(data$default)[2]/table(data$default)[1],
+              table(subset1$default)[2]/table(subset1$default)[1],
+              table(subset2$default)[2]/table(subset2$default)[1])
+nrows = rbind(nrow(data), nrow(subset1), nrow(subset2))
+
+#create matrix to export later
+data_integrity = as.matrix(cbind(nrows, props))
+rownames(data_integrity) = c("Original Data", "Subset 1", "Subset 2")
+colnames(data_integrity) = c("n_obs", "Proportion of Defaults")
+print(data_integrity)
 
 #estimate logit baseline
 form = formula(default ~ student + balance + income)
@@ -38,7 +62,6 @@ form = formula(default ~ student + balance + income)
 baseline = glm(form, data = data, family = "binomial")
 tidy(baseline)
 plot(baseline)
-
 
 #flat priors
 flat.fit = stan_glm(default ~ student + balance + income, data = data, 
@@ -54,20 +77,44 @@ posterior.flat = as.matrix(flat.fit)
 plotposterior.flat = as.data.frame(flat.fit) %>% 
   reshape2::melt(measure.vars = 1:4)
 
-#strong priors (data-driven)
+#set data-driven priors
+data_driven_prior = normal(location = c(0.5, -0.1, -0.011), 
+           scale = c(0.236, 0.000232, 0.00000820), autoscale = F)
+
+#estimate models with data-driven / strong prior
+#strong priors (data-driven) # FULL data set
 strong.fit = stan_glm(default ~ student + balance + income, data = data, 
                     family = binomial(link = "logit"), y = T, 
                     algorithm = "sampling", 
-                    prior = normal(location = c(2, 1, 1), scale = c(0.492, ), autoscale = F),
+                    prior = data_driven_prior,
                     warmup = 1000, iter = 10000, chains = 4, refresh = 10000)
 
 yrep.strong = posterior_predict(strong.fit, draws = 1000)
-
 posterior.strong = as.matrix(strong.fit)
 
 #tidy df for ggplot
 plotposterior.strong = as.data.frame(strong.fit) %>% 
   reshape2::melt(measure.vars = 1:4)
+
+#strong priors (data-driven) # SUBSET 1
+strong.fit.s1 = stan_glm(default ~ student + balance + income, data = subset1, 
+                      family = binomial(link = "logit"), y = T, 
+                      algorithm = "sampling", 
+                      prior = data_driven_prior,
+                      warmup = 1000, iter = 10000, chains = 4, refresh = 0)
+
+yrep.strong.s1 = posterior_predict(strong.fit.s1, draws = 1000)
+posterior.strong.s1 = as.matrix(strong.fit.s1)
+
+#strong priors (data-driven) # SUBSET 2
+strong.fit.s2 = stan_glm(default ~ student + balance + income, data = subset2, 
+                      family = binomial(link = "logit"), y = T, 
+                      algorithm = "sampling", 
+                      prior = data_driven_prior,
+                      warmup = 1000, iter = 10000, chains = 4, refresh = 0)
+
+yrep.strong.s2 = posterior_predict(strong.fit.s2, draws = 1000)
+posterior.strong.s2 = as.matrix(strong.fit.s2)
 
 
 #monitor results
@@ -82,14 +129,21 @@ monitor(posterior.strong)
 #look at strong priors
 prior_summary(strong.fit)
 
+#monitor results subset 1
+monitor(posterior.strong.s1)
+
+#monitor results subset 2
+monitor(posterior.strong.s2)
+
 #define custom functions for plots below
 prop_zero <- function(x) mean(x == 0)
 prop_one <- function(x) mean(x == 1)
 
 #Geweke Test
 geweke.diag(posterior.flat)
-
 geweke.diag(posterior.strong)
+geweke.diag(posterior.strong.s1)
+geweke.diag(posterior.strong.s2)
 
 
 #loocv with diff sample sizes
