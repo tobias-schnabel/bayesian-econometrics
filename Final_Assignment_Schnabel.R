@@ -7,7 +7,7 @@ rm(list = ls(all = TRUE)) #CLEAR ALL
 library(tidyverse)
 library(ggpubr)
 library(stargazer)
-library(recipes)
+library(caret)
 library(rstan)
 library(rstanarm)
 options(mc.cores = parallel::detectCores())
@@ -27,6 +27,10 @@ data = Default %>%
 
 #df summary statistics
 stargazer(data, type = "text")
+
+#generate datasets with fewer obs to compare models
+prop_default = table(data$default)[2]/table(data$default)[1] #3.4% default rate
+
 
 #estimate logit baseline
 form = formula(default ~ student + balance + income)
@@ -50,7 +54,7 @@ posterior.flat = as.matrix(flat.fit)
 plotposterior.flat = as.data.frame(flat.fit) %>% 
   reshape2::melt(measure.vars = 1:4)
 
-#strong priors
+#strong priors (data-driven)
 strong.fit = stan_glm(default ~ student + balance + income, data = data, 
                     family = binomial(link = "logit"), y = T, 
                     algorithm = "sampling", 
@@ -88,22 +92,35 @@ geweke.diag(posterior.flat)
 geweke.diag(posterior.strong)
 
 
-#posterior.flat predictive checks
+#loocv with diff sample sizes
 
 
 #trimming the posterior
 
 
-# do tables
-if (Sys.info()[7] == "ts") { #this code only executes on my machine to prevent errors
-  
-}
-
 # do plots
+source('Plots.R')
+
+#export plots and Tables
 if (Sys.info()[7] == "ts") { 
   #this code only executes on my machine to prevent errors
   source('Tables.R')
-  source('Plots.R')
+  source('Plot.Export.R')
+  setwd('/Users/ts/Git/ise')
 }
+
+#display plots (run each line to show plots, might take a few seconds)
+phf
+dof
+dodf
+propcomp
+denscomp
+discretedenscomp
+rhatcomp
+acfcomp
+
+
+
+
 
 
