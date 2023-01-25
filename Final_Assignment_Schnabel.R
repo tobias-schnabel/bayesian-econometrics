@@ -84,10 +84,11 @@ posterior = as.matrix(flat.fit)
 
 color_scheme_set("brightblue")
 
-dot = ggtitle()
+dot = ggtitle("Density Overlay Plot, 1000 Draws")
 ppc_dens_overlay(y, y_rep) + 
   scale_x_continuous( limits=c(0, 1), 
-              breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1))
+              breaks = c(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
+              dot
                      
 ppc_ecdf_overlay(y, y_rep, discrete = T)
 ppc_intervals(y, y_rep)
