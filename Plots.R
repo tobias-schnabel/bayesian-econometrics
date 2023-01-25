@@ -2,10 +2,16 @@
 tf = ggtitle("Flat Prior")
 ts = ggtitle("Strong Prior")
 dn = labs(caption = "1000 Draws from Posterior")
+full = ggtitle("Full Data Set")
+sub1 = ggtitle("Subset 1")
+sub2 = ggtitle("Subset 2")
 
 color_scheme_set("brightblue")
 
 #set variables for plots for FLAT PRIORS
+y = data$default
+y_s1 = subset1$default
+y_s2 = subset2$default
 yrep = yrep.flat
 posterior = posterior.flat
 fit = flat.fit
@@ -106,9 +112,34 @@ denscomp = ggarrange(dof, dos)
 #compare discrete density overlays
 discretedenscomp = ggarrange(dodf, dods)
 #mcmc
-rhatcomp = ggarrange(rhat.flat, rhat.strong, neff.flat, neff.strong, ncol = 2)
+rhatcomp = ggarrange(rhat.flat, rhat.strong, neff.flat, neff.strong, ncol = 2,
+                     common.legend = T, legend = "bottom")
 #acf
 acfcomp = ggarrange(acf.flat, acf.strong)
+
+#set color scheme for sample size comparisons
+color_scheme_set("mix-blue-red")
+
+######DO sample size comparison Plots######
+dos.comp = ppc_dens_overlay(y, yrep.strong) + 
+  scale_x_continuous( limits=c(0, 1), 
+                      breaks = c(0, 0.1, 0.2, 0.3, 0.4, 
+                                 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
+  full
+
+do.s1 = ppc_dens_overlay(y_s1, yrep.strong.s1) + 
+  scale_x_continuous( limits=c(0, 1), 
+                      breaks = c(0, 0.1, 0.2, 0.3, 0.4, 
+                                 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
+  sub1
+
+do.s2 = ppc_dens_overlay(y_s2, yrep.strong.s2) + 
+  scale_x_continuous( limits=c(0, 1), 
+                      breaks = c(0, 0.1, 0.2, 0.3, 0.4, 
+                                 0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
+  sub2
+
+do_sample_comp = ggarrange(do.s2, do.s1, dos.comp, nrow = 3)
 
 #reset color scheme
 color_scheme_set("brightblue")
