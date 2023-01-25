@@ -3,6 +3,8 @@ tf = ggtitle("Flat Prior")
 ts = ggtitle("Strong Prior")
 dn = labs(caption = "1000 Draws from Posterior")
 
+color_scheme_set("brightblue")
+
 #set variables for plots for FLAT PRIORS
 yrep = yrep.flat
 posterior = posterior.flat
@@ -62,8 +64,7 @@ hts = ggtitle("Strong Priors")
 phs = ggplot(data = plotposterior.strong,aes(x = value, group = variable)) +
   geom_histogram(bins=300, colour = "#99cbff") +
   facet_wrap(~ variable, scales = "free_x") + hts +
-  scale_x_continuous(labels = scales::comma)
-+ dn
+  scale_x_continuous(labels = scales::comma) + dn
 
 #density overlay
 dos = ppc_dens_overlay(y, yrep) + 
@@ -109,5 +110,6 @@ rhatcomp = ggarrange(rhat.flat, rhat.strong, neff.flat, neff.strong, ncol = 2)
 #acf
 acfcomp = ggarrange(acf.flat, acf.strong)
 
-#make list of plots for printing
-plotlist = list(phf, dof, dodf, propcomp, denscomp, discretedenscomp, rhatcomp, acfcomp)
+#reset color scheme
+color_scheme_set("brightblue")
+
