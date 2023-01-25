@@ -34,8 +34,6 @@ ggsave("density_overlay_flat.png", dof)
 ggsave("density_overlay_discrete_flat.png", dodf)
 
 #check proportions of 0s and ones
-ggsave("prop0_flat.png", p0f)
-ggsave("prop1_flat.png", p1f)
 ggsave("mcmc_trace_flat.png", trace.flat)
 ggsave("mcmc_pairs.png", pairs.flat)
 ggsave("rhat_flat.png", rhat.flat) 
@@ -45,8 +43,6 @@ ggsave("acf_flat.png", acf.flat)
 ggsave("posterior_hist_strong.png")
 ggsave("density_overlay_strong.png", dos) 
 ggsave("density_overlay_discrete_strong.png", dods) 
-ggsave("prop0_strong.png", p0s)
-ggsave("prop1_strong.png", p1s)
 ggsave("mcmc_trace_strong.png", trace.strong)
 ggsave("mcmc_pairs.png", pairs.strong)
 ggsave("rhat_strong.png", rhat.strong)
@@ -63,12 +59,14 @@ ggsave('dens_comp.png', denscomp)
 ggsave('dens_dis_comp.png', discretedenscomp)
 
 png("rhat_comp.png", width = 1000, height = 1000, units = "px") 
-#ggsave('rhat_comp.png', rhatcomp)
-rhatcomp
-dev.off()
+ggsave('rhat_comp.png', rhatcomp)
+ggsave('neff_comp.png', neffcomp)
 ggsave('acf_comp.png', acfcomp)
 
 ######DO sample size comparison Plots######
-ggsave('dos_comp_ss', do_sample_comp)
+ggsave('dos_comp_ss.png', do_sample_comp)
+ggsave('neff_comp_ss.png', neff_sample_comp)
+ggsave('rhat_comp_ss.pmg', rhat_sample_comp)
+ggsave('acf_comp_ss', acf_sample_comp)
 
 setwd('/Users/ts/Git/ise')
