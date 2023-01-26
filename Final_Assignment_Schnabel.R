@@ -173,6 +173,9 @@ if (Sys.info()[7] == "ts") {
   source('Tables.R')
   source('Plot.Export.R')
   setwd('/Users/ts/Git/ise')
+  
+  #copy code files to overleaf
+  file.copy('Main.R', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
 }
 
 ####Show Plots####
