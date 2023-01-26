@@ -155,6 +155,8 @@ geweke.diag(posterior.strong)
 geweke.diag(posterior.strong.s1)
 geweke.diag(posterior.strong.s2)
 
+
+
 #loocv with diff sample sizes
 
 
@@ -193,6 +195,10 @@ rhatcomp
 neffcomp
 acfcomp
 do_sample_comp
+gp1
+gp2
+gp3
+gp4
 
 
 
