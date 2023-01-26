@@ -4,21 +4,34 @@
 rm(list = ls(all = TRUE)) #CLEAR ALL
 
 ####Housekeeping####
-library(tidyverse)
-library(broom)
-library(ggpubr)
-library(stargazer)
-library(caret)
-library(rstan)
-library(rstanarm)
-library(kableExtra)
+packages <- c("tidyverse", "broom", "ggpubr", "stargazer", "caret", "rstan",
+              "rstanarm", "kableExtra", "bayesplot", "coda", "ISLR")
+
+#Comment in lines below to Install packages not yet installed
+# installed_packages <- packages %in% rownames(installed.packages())
+# if (any(installed_packages == FALSE)) {
+#   install.packages(packages[!installed_packages])
+# }
+
+#load packages
+invisible(lapply(packages, library, character.only = TRUE))
+
+#set options
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
-library(bayesplot)
-library(coda)
 
-#load ISLR for data
-library(ISLR)
+
+# library(tidyverse)
+# library(broom)
+# library(ggpubr)
+# library(stargazer)
+# library(caret)
+# library(rstan)
+# library(rstanarm)
+# library(kableExtra)
+# library(bayesplot)
+# library(coda)
+# library(ISLR)
 
 #load Default Data Set
 attach(Default)
