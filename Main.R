@@ -162,9 +162,18 @@ geweke.plot(as.mcmc(posterior.strong.s1))
 geweke.plot(as.mcmc(posterior.strong.s2))
 
 
-#loocv with diff sample sizes
+#compare Leave-one out cv with diff sample sizes , this will take a while; can also reduce k here if needed
+flat.fit$loo = kfold(flat.fit, k = nrow(data))
+strong.fit$loo = kfold(strong.fit, k = nrow(data))
+strong.fit.s1$loo = kfold(strong.fit.s1, k = nrow(subset1))
+strong.fit.s2$loo = kfold(strong.fit.s2, k = nrow(subset2))
 
-
+fitlist = stanreg_list(flat.fit, strong.fit.s1, strong.fit.s2, strong.fit)
+loocv.comp = loo_compare(fitlist,
+                         model_names = c("Flat Priors",
+                                         "Strong Priors 1k obs",
+                                         "Strong Priors 5k obs",
+                                         "Strong Priors full sample"))
 #trimming the posterior
 
 ####Graphical PPC####
