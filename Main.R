@@ -52,14 +52,14 @@ subset1 = data[intrain_1k,]
 subset2 = data[intrain_5k,]
 
 #verify proportions
-props = rbind(table(data$default)[2]/table(data$default)[1],
-              table(subset1$default)[2]/table(subset1$default)[1],
-              table(subset2$default)[2]/table(subset2$default)[1])
-nrows = rbind(nrow(data), nrow(subset1), nrow(subset2))
+props = rbind(table(subset1$default)[2]/table(subset1$default)[1],
+              table(subset2$default)[2]/table(subset2$default)[1],
+              table(data$default)[2]/table(data$default)[1])
+nrows = rbind(nrow(subset1), nrow(subset2), nrow(data))
 
 #create matrix to export later
 data_integrity = as.matrix(cbind(nrows, props))
-rownames(data_integrity) = c("Original Data", "Subset 1", "Subset 2")
+rownames(data_integrity) = c("Subset 1", "Subset 2", "Original Data")
 colnames(data_integrity) = c("n_obs", "Proportion of Defaults")
 print(data_integrity)
 
