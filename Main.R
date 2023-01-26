@@ -165,7 +165,7 @@ geweke.plot(as.mcmc(posterior.strong.s2))
 #compare 10-fold cv with diff sample sizes, this way of performing 10-fold cv
 #adds an attribute to each model
 #*****NOTE*****this will take quite a while to run
-#I would recommend lowering k to 4-5 unless strong compute is available
+#I would recommend lowering k to 3-4 unless strong compute is available
 # reason why I chose k = 10: my machine has 10 cores, which this function utilizes
 # reason why not LOOCV: too computationally expensive
 flat.fit$loo = kfold(flat.fit, k = nrow(data))
@@ -178,15 +178,12 @@ loocv.comp = loo_compare(flat.fit, strong.fit)
 strong.fit.s1$loo
 strong.fit.s2$loo
 
-#trimming the posterior
-
 ####Graphical PPC####
 # do plots
 #define custom functions for plots below
 prop_zero <- function(x) mean(x == 0)
 prop_one <- function(x) mean(x == 1)
 source('Plots.R')
-
 
 ####Housekeeping Pt2####
 #export plots and Tables and copy code files
