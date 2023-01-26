@@ -66,7 +66,7 @@ ggsave('acf_comp.png', acfcomp)
 ######DO sample size comparison Plots######
 ggsave('dos_comp_ss.png', do_sample_comp)
 ggsave('neff_comp_ss.png', neff_sample_comp)
-ggsave('rhat_comp_ss.pmg', rhat_sample_comp)
+ggsave('rhat_comp_ss.png', rhat_sample_comp)
 ggsave('acf_comp_ss', acf_sample_comp)
 
 setwd('/Users/ts/Git/ise')
