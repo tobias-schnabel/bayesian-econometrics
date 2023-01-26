@@ -46,7 +46,7 @@ colnames(loocvmat) = c("ELPD k-fold Estimate", "ELPD k-fold SE",
 
 kable(loocvmat, format = "latex", 
       digits = 4,
-      caption = "LOOCV Comparison") %>% 
+      caption = "10-fold CV Comparison") %>% 
   save_kable("loocv_comp.tex")
 
 setwd('/Users/ts/Git/ise')
