@@ -50,6 +50,23 @@ ggsave("neff_strong.png", neff.strong)
 ggsave("acf_bars_strong.png", acfb.strong)
 ggsave("acf_strong.png", acf.strong)
 
+png("geweke_flat.png", width = 1000, height = 1000, units = "px") 
+geweke.plot(as.mcmc(posterior.flat))
+dev.off()
+
+png("geweke_flat.png", width = 1000, height = 1000, units = "px") 
+geweke.plot(as.mcmc(posterior.strong))
+dev.off()
+
+png("geweke_flat.png", width = 1000, height = 1000, units = "px") 
+geweke.plot(as.mcmc(posterior.strong.s1))
+dev.off()
+
+png("geweke_flat.png", width = 1000, height = 1000, units = "px") 
+geweke.plot(as.mcmc(posterior.strong.s2))
+dev.off()
+
+
 ######DO side-by-side-comparison Plots######
 setwd('/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Figures/comp')
 
@@ -67,6 +84,6 @@ ggsave('acf_comp.png', acfcomp)
 ggsave('dos_comp_ss.png', do_sample_comp)
 ggsave('neff_comp_ss.png', neff_sample_comp)
 ggsave('rhat_comp_ss.png', rhat_sample_comp)
-ggsave('acf_comp_ss', acf_sample_comp)
+ggsave('acf_comp_ss.png', acf_sample_comp)
 
 setwd('/Users/ts/Git/ise')
