@@ -20,19 +20,6 @@ invisible(lapply(packages, library, character.only = TRUE))
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
-
-# library(tidyverse)
-# library(broom)
-# library(ggpubr)
-# library(stargazer)
-# library(caret)
-# library(rstan)
-# library(rstanarm)
-# library(kableExtra)
-# library(bayesplot)
-# library(coda)
-# library(ISLR)
-
 #load Default Data Set
 attach(Default)
 
