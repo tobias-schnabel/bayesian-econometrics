@@ -142,7 +142,7 @@ do.s2 = ppc_dens_overlay(y_s2, yrep.strong.s2) +
                                  0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
   sub2
 
-do_sample_comp = ggarrange(do.s2, do.s1, dos.comp, nrow = 3)
+do_sample_comp = ggarrange(do.s1, do.s2, dos.comp, nrow = 3)
 
 rhat.s.full = plot(strong.fit, "rhat") + full
 rhat.s.s1 = plot(strong.fit.s1, "rhat") + sub1
@@ -167,4 +167,11 @@ acf_sample_comp = ggarrange(acf.s.s1, acf.s.s2, acf.s.full, nrow = 3,
 
 #reset color scheme
 color_scheme_set("brightblue")
+
+#Geweke plots
+geweke.plot(as.mcmc(posterior.flat))
+geweke.plot(as.mcmc(posterior.strong))
+geweke.plot(as.mcmc(posterior.strong.s1))
+geweke.plot(as.mcmc(posterior.strong.s2))
+
 
