@@ -26,7 +26,7 @@ phf = ggplot(data = plotposterior.flat,aes(x = value, group = variable)) +
 
 #density overlay
 dof = ppc_dens_overlay(y, yrep) + 
-  scale_x_continuous( limits=c(0, 1), 
+  scale_x_continuous(limits=c(0, 1), 
                       breaks = c(0, 0.1, 0.2, 0.3, 0.4, 
                                  0.5, 0.6, 0.7, 0.8, 0.9, 1)) +
   tf
@@ -40,21 +40,21 @@ p1f = ppc_stat(y, yrep, stat = "prop_one", binwidth = 0.00005) + tf
 
 #check posterior.flat trace
 color_scheme_set("mix-blue-pink")
-trace.flat = mcmc_trace(fit) #+ tf
-pairs.flat = mcmc_pairs(fit) #+ tf
+trace.flat = mcmc_trace(flat.fit) #+ tf
+pairs.flat = mcmc_pairs(flat.fit) #+ tf
 
 # mcmc diagnostics
 # rhat
-rhat.flat = plot(fit, "rhat") + tf
+rhat.flat = plot(flat.fit, "rhat") + tf
 
 # ratio of effective sample size to total posterior sample size
-neff.flat = plot(fit, "neff") + tf
+neff.flat = plot(flat.fit, "neff") + tf
 
 # autocorrelation by chain
-acfb.flat = plot(fit, "acf_bar", pars = "student") + tf
+acfb.flat = plot(flat.fit, "acf_bar", pars = "student") + tf
 
 #joint acf
-acf.flat = mcmc_acf(fit) + tf
+acf.flat = mcmc_acf(flat.fit) + tf
 
 #########REPEAT ALL PLOTS FOR STRONG PRIOR MODEL#########
 
@@ -88,18 +88,18 @@ p1s = ppc_stat(y, yrep, stat = "prop_one", binwidth = 0.00005) + ts
 
 #check posterior.flat trace
 color_scheme_set("mix-blue-pink")
-trace.strong = mcmc_trace(fit) #+ ts
-pairs.strong = mcmc_pairs(fit) #+ ts
+trace.strong = mcmc_trace(strong.fit) #+ ts
+pairs.strong = mcmc_pairs(strong.fit) #+ ts
 
 # mcmc diagnostics
 # rhat
-rhat.strong = plot(fit, "rhat") + ts
-neff.strong = plot(fit, "neff") + ts
-acfb.strong = plot(fit, "acf_bar", pars = "student") + ts
+rhat.strong = plot(strong.fit, "rhat") + ts
+neff.strong = plot(strong.fit, "neff") + ts
+acfb.strong = plot(strong.fit, "acf_bar", pars = "student") + ts
 
 
 #joint acf
-acf.strong = mcmc_acf(fit) + ts
+acf.strong = mcmc_acf(strong.fit) + ts
 
 ######Do side-by-side-comparison Plots######
 #compare posterior histograms
