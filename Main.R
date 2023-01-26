@@ -23,6 +23,9 @@ rstan_options(auto_write = TRUE)
 #load Default Data Set
 attach(Default)
 
+#record start time
+start.time = Sys.time()
+
 # tidy
 #make factors numerical
 data = Default %>% 
@@ -137,17 +140,19 @@ monitor(posterior.flat)
 #look at flat priors
 prior_summary(flat.fit)
 
-#monitor results
-monitor(posterior.strong)
-
 #look at strong priors
 prior_summary(strong.fit)
 
+#monitor results
+monitor(posterior.strong)
+cat("", sep = "\n") # print empty line for readability
 #monitor results subset 1
 monitor(posterior.strong.s1)
+cat("", sep = "\n") # print empty line for readability
 
 #monitor results subset 2
 monitor(posterior.strong.s2)
+cat("", sep = "\n") # print empty line for readability
 
 #Geweke Test
 geweke.diag(posterior.flat)
@@ -198,6 +203,10 @@ if (Sys.info()[7] == "ts") {
   file.copy('scrap_file.R', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
 }
 
+#record end time
+end.time = Sys.time()
+print("Time Elapsed: ")
+print(end.time-start.time)
 ####Show Plots####
 #display plots (run each line to show plots, might take a few seconds)
 phf
@@ -210,13 +219,5 @@ rhatcomp
 neffcomp
 acfcomp
 do_sample_comp
-gp1
-gp2
-gp3
-gp4
-
-
-
-
 
 
