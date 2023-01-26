@@ -54,15 +54,15 @@ png("geweke_flat.png", width = 1000, height = 1000, units = "px")
 geweke.plot(as.mcmc(posterior.flat))
 dev.off()
 
-png("geweke_flat.png", width = 1000, height = 1000, units = "px") 
+png("geweke_strong.png", width = 1000, height = 1000, units = "px") 
 geweke.plot(as.mcmc(posterior.strong))
 dev.off()
 
-png("geweke_flat.png", width = 1000, height = 1000, units = "px") 
+png("geweke_strong.s1.png", width = 1000, height = 1000, units = "px") 
 geweke.plot(as.mcmc(posterior.strong.s1))
 dev.off()
 
-png("geweke_flat.png", width = 1000, height = 1000, units = "px") 
+png("geweke_strong.s2.png", width = 1000, height = 1000, units = "px") 
 geweke.plot(as.mcmc(posterior.strong.s2))
 dev.off()
 
