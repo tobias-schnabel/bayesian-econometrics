@@ -68,7 +68,6 @@ form = formula(default ~ student + balance + income)
 
 baseline = glm(form, data = data, family = "binomial")
 tidy(baseline)
-plot(baseline)
 
 
 ####flat priors####
@@ -219,5 +218,8 @@ rhatcomp
 neffcomp
 acfcomp
 do_sample_comp
+
+#Baseline Regression Diagnostic Plots
+plot(baseline)
 
 
