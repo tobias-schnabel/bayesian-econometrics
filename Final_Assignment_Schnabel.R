@@ -3,7 +3,7 @@
 
 rm(list = ls(all = TRUE)) #CLEAR ALL
 
-## Housekeeping ##
+####Housekeeping####
 library(tidyverse)
 library(ggpubr)
 library(stargazer)
@@ -17,6 +17,8 @@ library(coda)
 
 #load ISLR for data
 library(ISLR)
+
+#load Default Data Set
 attach(Default)
 
 # tidy
@@ -63,60 +65,70 @@ baseline = glm(form, data = data, family = "binomial")
 tidy(baseline)
 plot(baseline)
 
-#flat priors
+
+####flat priors####
+
+#fit stan model
 flat.fit = stan_glm(default ~ student + balance + income, data = data, 
                     family = binomial(link = "logit"), y = T, 
                     algorithm = "sampling", 
                  warmup = 1000, iter = 10000, chains = 4, refresh = 10000)
 
+#generate yrep for this prior
 yrep.flat = posterior_predict(flat.fit, draws = 1000)
 
+#extract posterior
 posterior.flat = as.matrix(flat.fit)
 
-#tidy df for ggplot
+#generate tidy df for use with ggplot
 plotposterior.flat = as.data.frame(flat.fit) %>% 
   reshape2::melt(measure.vars = 1:4)
 
-#set data-driven priors
+
+
+####strong / data-driven priors####
+tidy(baseline)
+#set data-driven priors: means and SD taken from baseline logit output
 data_driven_prior = normal(location = c(0.5, -0.1, -0.011), 
            scale = c(0.236, 0.000232, 0.00000820), autoscale = F)
 
 #estimate models with data-driven / strong prior
-#strong priors (data-driven) # FULL data set
+#fit strong priors (data-driven) on ***FULL data set***
 strong.fit = stan_glm(default ~ student + balance + income, data = data, 
                     family = binomial(link = "logit"), y = T, 
                     algorithm = "sampling", 
                     prior = data_driven_prior,
                     warmup = 1000, iter = 10000, chains = 4, refresh = 10000)
 
-yrep.strong = posterior_predict(strong.fit, draws = 1000)
-posterior.strong = as.matrix(strong.fit)
+yrep.strong = posterior_predict(strong.fit, draws = 1000) #gen yrep
+posterior.strong = as.matrix(strong.fit) #extract posterior
 
-#tidy df for ggplot
+#generate tidy df for ggplot
 plotposterior.strong = as.data.frame(strong.fit) %>% 
   reshape2::melt(measure.vars = 1:4)
 
-#strong priors (data-driven) # SUBSET 1
+#fit strong priors (data-driven) on  ***SUBSET 1***
 strong.fit.s1 = stan_glm(default ~ student + balance + income, data = subset1, 
                       family = binomial(link = "logit"), y = T, 
                       algorithm = "sampling", 
                       prior = data_driven_prior,
                       warmup = 1000, iter = 10000, chains = 4, refresh = 0)
 
-yrep.strong.s1 = posterior_predict(strong.fit.s1, draws = 1000)
-posterior.strong.s1 = as.matrix(strong.fit.s1)
+yrep.strong.s1 = posterior_predict(strong.fit.s1, draws = 1000) #gen yrep
+posterior.strong.s1 = as.matrix(strong.fit.s1) #extract posterior
 
-#strong priors (data-driven) # SUBSET 2
+#fit strong priors (data-driven) on ***SUBSET 2***
 strong.fit.s2 = stan_glm(default ~ student + balance + income, data = subset2, 
                       family = binomial(link = "logit"), y = T, 
                       algorithm = "sampling", 
                       prior = data_driven_prior,
                       warmup = 1000, iter = 10000, chains = 4, refresh = 0)
 
-yrep.strong.s2 = posterior_predict(strong.fit.s2, draws = 1000)
-posterior.strong.s2 = as.matrix(strong.fit.s2)
+yrep.strong.s2 = posterior_predict(strong.fit.s2, draws = 1000) #gen yrep
+posterior.strong.s2 = as.matrix(strong.fit.s2) #extract posterior
 
 
+####COMPARE RESULTS####
 #monitor results
 monitor(posterior.flat)
 
@@ -135,27 +147,27 @@ monitor(posterior.strong.s1)
 #monitor results subset 2
 monitor(posterior.strong.s2)
 
-#define custom functions for plots below
-prop_zero <- function(x) mean(x == 0)
-prop_one <- function(x) mean(x == 1)
-
 #Geweke Test
 geweke.diag(posterior.flat)
 geweke.diag(posterior.strong)
 geweke.diag(posterior.strong.s1)
 geweke.diag(posterior.strong.s2)
 
-
 #loocv with diff sample sizes
 
 
 #trimming the posterior
 
-
+####Graphical PPC####
 # do plots
+#define custom functions for plots below
+prop_zero <- function(x) mean(x == 0)
+prop_one <- function(x) mean(x == 1)
 source('Plots.R')
 
-#export plots and Tables
+
+####Housekeeping Pt2####
+#export plots and Tables and copy code files
 if (Sys.info()[7] == "ts") { 
   #this code only executes on my machine to prevent errors
   source('Tables.R')
@@ -163,6 +175,7 @@ if (Sys.info()[7] == "ts") {
   setwd('/Users/ts/Git/ise')
 }
 
+####Show Plots####
 #display plots (run each line to show plots, might take a few seconds)
 phf
 dof
