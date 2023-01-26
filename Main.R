@@ -155,6 +155,11 @@ geweke.diag(posterior.strong)
 geweke.diag(posterior.strong.s1)
 geweke.diag(posterior.strong.s2)
 
+#Geweke plots
+geweke.plot(as.mcmc(posterior.flat))
+geweke.plot(as.mcmc(posterior.strong))
+geweke.plot(as.mcmc(posterior.strong.s1))
+geweke.plot(as.mcmc(posterior.strong.s2))
 
 
 #loocv with diff sample sizes
