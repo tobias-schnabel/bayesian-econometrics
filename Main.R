@@ -20,7 +20,7 @@ invisible(lapply(packages, library, character.only = TRUE))
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
-#load Default Data Set
+#load Credit Card Default Data Set
 attach(Default)
 
 #record start time
