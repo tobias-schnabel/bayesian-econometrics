@@ -5,11 +5,13 @@ rm(list = ls(all = TRUE)) #CLEAR ALL
 
 ####Housekeeping####
 library(tidyverse)
+library(broom)
 library(ggpubr)
 library(stargazer)
 library(caret)
 library(rstan)
 library(rstanarm)
+library(kableExtra)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 library(bayesplot)
@@ -176,6 +178,7 @@ if (Sys.info()[7] == "ts") {
   
   #copy code files to overleaf
   file.copy('Main.R', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
+  file.copy('scrap_file.R', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
 }
 
 ####Show Plots####
