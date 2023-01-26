@@ -162,18 +162,22 @@ geweke.plot(as.mcmc(posterior.strong.s1))
 geweke.plot(as.mcmc(posterior.strong.s2))
 
 
-#compare Leave-one out cv with diff sample sizes , this will take a while; can also reduce k here if needed
+#compare 10-fold cv with diff sample sizes, this way of performing 10-fold cv
+#adds an attribute to each model
+#*****NOTE*****this will take quite a while to run
+#I would recommend lowering k to 4-5 unless strong compute is available
+# reason why I chose k = 10: my machine has 10 cores, which this function utilizes
+# reason why not LOOCV: too computationally expensive
 flat.fit$loo = kfold(flat.fit, k = nrow(data))
 strong.fit$loo = kfold(strong.fit, k = nrow(data))
-strong.fit.s1$loo = kfold(strong.fit.s1, k = nrow(subset1))
+strong.fit.s1$loo = kfold(strong.fit.s1, k = 10)
 strong.fit.s2$loo = kfold(strong.fit.s2, k = nrow(subset2))
 
-fitlist = stanreg_list(flat.fit, strong.fit.s1, strong.fit.s2, strong.fit)
-loocv.comp = loo_compare(fitlist,
-                         model_names = c("Flat Priors",
-                                         "Strong Priors 1k obs",
-                                         "Strong Priors 5k obs",
-                                         "Strong Priors full sample"))
+#compare
+loocv.comp = loo_compare(flat.fit, strong.fit)
+strong.fit.s1$loo
+strong.fit.s2$loo
+
 #trimming the posterior
 
 ####Graphical PPC####
