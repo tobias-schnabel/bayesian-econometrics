@@ -168,10 +168,6 @@ acf_sample_comp = ggarrange(acf.s.s1, acf.s.s2, acf.s.full, nrow = 3,
 #reset color scheme
 color_scheme_set("brightblue")
 
-#Geweke plots
-geweke.plot(as.mcmc(posterior.flat))
-geweke.plot(as.mcmc(posterior.strong))
-geweke.plot(as.mcmc(posterior.strong.s1))
-geweke.plot(as.mcmc(posterior.strong.s2))
+
 
 
