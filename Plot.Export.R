@@ -12,7 +12,7 @@ par(mfrow = c(1, 1)) #disable grid plot
 
 #correlograms
 png("corr1.png", width = 1000, height = 1000, units = "px") 
-pairs(data[c(2,4)])
+boxplot(balance ~ student, data = Default)
 dev.off()
 png("corr2.png", width = 1000, height = 1000, units = "px") 
 pairs(data[3:4])
