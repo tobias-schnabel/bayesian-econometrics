@@ -66,7 +66,7 @@ print(data_integrity)
 #estimate logit baseline
 form = formula(default ~ student + balance + income)
 
-baseline = glm(form, data = data, family = "binomial")
+baseline = glm(form, data = data, family = binomial(link = "logit"))
 tidy(baseline)
 
 
@@ -200,6 +200,10 @@ if (Sys.info()[7] == "ts") {
   #copy code files to overleaf
   file.copy('Main.R', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
   file.copy('scrap_file.R', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
+  
+  #copy bib of packages and dependencies
+  knitr::write_bib(c(.packages()),
+                   "/Users/ts/Dropbox/Apps/Overleaf/ISE_Assignment/packages.bib")
 }
 
 #record end time
