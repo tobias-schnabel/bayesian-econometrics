@@ -1,10 +1,12 @@
 setwd('/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Tables')
 #summary stats
 stargazer(data, summary = T, title = "Summary Statistics", float = T, 
-          table.placement = "H")
+          table.placement = "H", 
+          out = "/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Tables/sumstats")
 #baseline
 stargazer(baseline, title = "Baseline Estimation Results", float = T, 
-          table.placement = "H")
+          table.placement = "H",
+          out = "/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Tables/baseline")
 
 #Data Integrity Table
 kable(data_integrity, format = "latex", 
