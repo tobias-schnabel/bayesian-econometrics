@@ -1,5 +1,4 @@
 data {
-
   int <lower = 0> N; // Defining the number of defects in the test dataset
   // response
   int <lower = 0, upper = 1> y [N];
@@ -8,8 +7,6 @@ data {
   // design matrix X
   // does not include an intercept
   matrix [N, K] X;
-   // Defining the number of probabilistic predictions required from the model
-  //vector <lower = 0> [K] default_pred;
   //keep responses
   int use_log_lik;
   int use_y_rep;
@@ -24,16 +21,13 @@ transformed parameters {
   eta = alpha + X * beta;
 }
 model {
-
   // multiple logistic regression model 
-  y ~ bernoulli_logit(alpha + X * beta);
+  y ~ bernoulli_logit(eta);
   
   // Prior models for the unobserved parameters
   // alpha ~ normal(0, 1);
   // beta ~ normal(1, 1);
-
 }
-
 generated quantities {
   // simulate data from the posterior
   vector[N * use_y_rep] y_rep;
