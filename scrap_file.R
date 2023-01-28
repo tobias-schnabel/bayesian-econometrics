@@ -23,9 +23,6 @@ rstan_options(auto_write = TRUE)
 #load Credit Card Default Data Set
 attach(Default)
 
-#record start time
-start.time = Sys.time()
-
 # tidy
 #make factors numerical
 data = Default %>% 
