@@ -200,6 +200,7 @@ if (Sys.info()[7] == "ts") {
   #copy code files to overleaf
   file.copy('Main.R', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
   file.copy('scrap_file.R', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
+  file.copy('Final_Assignment_Schnabel.stan', '/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Code', overwrite = T)
   
   #copy bib of packages and dependencies
   knitr::write_bib(c(.packages()),
