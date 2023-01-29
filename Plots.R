@@ -107,6 +107,14 @@ histcomp = ggarrange(phf, phs)
 #compare prop 0/1
 propcomp = ggarrange(p0f, p0s, p1f, p1s)
 
+#prop 0 and 1 by sample size
+p0s.s1 = ppc_stat(y_s1, yrep.strong.s1, stat = "prop_zero", binwidth = 0.00005) + sub1
+p1s.s1 = ppc_stat(y_s1, yrep.strong.s1, stat = "prop_one", binwidth = 0.00005) + sub1
+p0s.s2 = ppc_stat(y_s2, yrep.strong.s2, stat = "prop_zero", binwidth = 0.00005) + sub2
+p1s.s2 = ppc_stat(y_s2, yrep.strong.s2, stat = "prop_one", binwidth = 0.00005) + sub2
+
+propcomp_ss = ggarrange(p0s.s1, p1s.s1, p0s.s2, p1s.s2)
+
 #compare density overlays
 denscomp = ggarrange(dof, dos)
 #compare discrete density overlays
@@ -164,6 +172,8 @@ acf.s.s2 = plot(strong.fit.s2, "acf", pars = "(Intercept)") + sub2 + xlim(0,7)
 
 acf_sample_comp = ggarrange(acf.s.s1, acf.s.s2, acf.s.full, nrow = 3,
                              common.legend = T, legend = "bottom") 
+
+
 
 #reset color scheme
 color_scheme_set("brightblue")
