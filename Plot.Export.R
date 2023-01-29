@@ -83,5 +83,6 @@ ggsave('dos_comp_ss.png', do_sample_comp)
 ggsave('neff_comp_ss.png', neff_sample_comp)
 ggsave('rhat_comp_ss.png', rhat_sample_comp)
 ggsave('acf_comp_ss.png', acf_sample_comp)
+ggsave('prop_comp_ss.png', propcomp_ss)
 
 setwd('/Users/ts/Git/ise')
