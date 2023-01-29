@@ -7,6 +7,7 @@ stargazer(data, summary = T, title = "Summary Statistics", float = T,
 #baseline
 stargazer(baseline, title = "Baseline Estimation Results", float = T, 
           table.placement = "H",
+          single.row = T,
           label = "tab:baseline",
           out = "/Users/ts/Library/CloudStorage/Dropbox/Apps/Overleaf/ISE_Assignment/Tables/baseline")
 
