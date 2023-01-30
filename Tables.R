@@ -21,21 +21,25 @@ kable(data_integrity, format = "latex",
 kable(as.data.frame(summary(flat.fit)), format = "latex", 
       digits = 4,
       caption = "Fit with Flat Priors") %>% 
+  kable_styling(latex_options = "HOLD_position") %>% 
   save_kable("flatfitsumm.tex")
 
 kable(as.data.frame(summary(strong.fit)), format = "latex", 
       digits = 4,
       caption = "Fit with Strong Priors, Full Data Set") %>% 
+  kable_styling(latex_options = "HOLD_position") %>% 
   save_kable("strongfit_full.tex")
 
 kable(as.data.frame(summary(strong.fit.s1)), format = "latex", 
       digits = 4,
       caption = "Fit with Strong Priors, Subset 1") %>% 
+  kable_styling(latex_options = "HOLD_position") %>% 
   save_kable("strongfit_sub1.tex")
 
 kable(as.data.frame(summary(strong.fit.s2)), format = "latex", 
       digits = 4,
       caption = "Fit with Strong Priors, Subset 2") %>% 
+  kable_styling(latex_options = "HOLD_position") %>% 
   save_kable("strongfit_sub2.tex")
 
 #LOOCV comparison full data
@@ -52,6 +56,7 @@ colnames(loocvmat) = c("ELPD k-fold Estimate", "ELPD k-fold SE",
 kable(loocvmat, format = "latex", 
       digits = 4,
       caption = "10-fold CV Comparison") %>% 
+  kable_styling(latex_options = "HOLD_position") %>% 
   save_kable("loocv_comp.tex")
 
 setwd('/Users/ts/Git/ise')
