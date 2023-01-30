@@ -85,6 +85,8 @@ dods = ppc_ecdf_overlay(y, yrep, discrete = T) + ts
 #check proportions of 0s and ones
 p0s = ppc_stat(y, yrep, stat = "prop_zero", binwidth = 0.00005) + ts
 p1s = ppc_stat(y, yrep, stat = "prop_one", binwidth = 0.00005) + ts
+p0s_ = ppc_stat(y, yrep, stat = "prop_zero", binwidth = 0.00005) + full
+p1s_ = ppc_stat(y, yrep, stat = "prop_one", binwidth = 0.00005) + full
 
 #check posterior.flat trace
 color_scheme_set("mix-blue-pink")
@@ -113,7 +115,7 @@ p1s.s1 = ppc_stat(y_s1, yrep.strong.s1, stat = "prop_one", binwidth = 0.00005) +
 p0s.s2 = ppc_stat(y_s2, yrep.strong.s2, stat = "prop_zero", binwidth = 0.00005) + sub2
 p1s.s2 = ppc_stat(y_s2, yrep.strong.s2, stat = "prop_one", binwidth = 0.00005) + sub2
 
-propcomp_ss = ggarrange(p0s.s1, p1s.s1, p0s.s2, p1s.s2)
+propcomp_ss = ggarrange(p0s.s1, p1s.s1, p0s.s2, p1s.s2, p0s_, p1s_, nrow = 3, ncol = 2)
 
 #compare density overlays
 denscomp = ggarrange(dof, dos)
