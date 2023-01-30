@@ -17,6 +17,7 @@ packages <- c("tidyverse", "broom", "ggpubr", "stargazer", "caret", "rstan",
 invisible(lapply(packages, library, character.only = TRUE))
 
 #set options
+options(digits = 3)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 
